@@ -5,6 +5,7 @@ UNBOUND_BLOCKED_HOSTS_DIR=/etc/unbound/blocked
 lists=(
   'https://raw.githubusercontent.com/StevenBlack/hosts/master/data/StevenBlack/hosts'
   'https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt'
+  'https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt'
 )
 
 for value in "${lists[@]}"; do
