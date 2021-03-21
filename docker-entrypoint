@@ -1,0 +1,56 @@
+#!/bin/bash
+set -e
+
+export UNBOUND_CONFIG_FILE=/etc/unbound/unbound.conf
+export UNBOUND_CONFIG_SAMPLE_FILE=/templates/unbound.sample.conf
+export UNBOUND_ANCHOR_FILE=/etc/unbound/keys/root.key
+export UNBOUND_ROOT_HINTS=/etc/unbound/root.hints
+export UNBOUND_BLOCKED_HOSTS_FILE=/etc/unbound/unbound.blocked.hosts
+export ICANN_BUNDLE_FILE=/etc/unbound/keys/icannbundle.pem
+
+printf "|---------------------------------------------------------------------------------------------\n";
+printf "| Starting Unbound DNS Cache Server\n"
+
+
+# Create keys folder if it does not exist
+[[ ! -d /etc/unbound/keys ]] && mkdir -p /etc/unbound/keys
+
+# Download latest ICANN bundle if it does not exist
+if [[ ! -f ${ICANN_BUNDLE_FILE} ]]; then
+  curl https://data.iana.org/root-anchors/icannbundle.pem --output ${ICANN_BUNDLE_FILE} >/dev/null 2>&1
+  ln -s ${ICANN_BUNDLE_FILE} /etc/unbound/icannbundle.pem
+  ln -s ${ICANN_BUNDLE_FILE} /icannbundle.pem
+fi
+
+# Download latest root hints file if it does not exist
+if [[ ! -f ${UNBOUND_ROOT_HINTS} ]]; then
+  curl  --ipv4 https://www.internic.net/domain/named.root --output ${UNBOUND_ROOT_HINTS} > /dev/null 2>&1
+fi
+
+# Generate certificates if they do not exist
+if [[ ! -f /etc/unbound/unbound_control.pem || ! -f /etc/unbound/unbound_server.pem ]]; then
+  printf "| ENTRYPOINT: Setting up unbound certificates...\n"
+  unbound-control-setup 2>&1 | sed 's/^/| ENTRYPOINT: Unbound: /g'
+fi
+
+# Create and validate root anchor key
+unbound-anchor -a ${UNBOUND_ANCHOR_FILE} || echo
+
+# Set correct file permissions
+chown -Rf unbound:unbound /etc/unbound /etc/unbound/keys
+chmod 644 /etc/unbound/*.conf
+
+# Update our blocked hosts
+/bin/bash /scripts/update_blocklists.sh no-reload
+
+printf "| ENTRYPOINT: \033[0;31mStarting supervisord (which starts and monitors cron and unbound) \033[0m\n"
+printf "|---------------------------------------------------------------------------------------------\n";
+
+# Lets create cron script for updating host daily
+CRON_FILE=/etc/periodic/daily/updatehosts
+printf "#!/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n" > ${CRON_FILE}
+printf ". /scripts/update_blocklists.sh\n" >> ${CRON_FILE}
+chmod +x ${CRON_FILE}
+
+# And off we launch
+exec $@
