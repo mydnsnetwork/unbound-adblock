@@ -18,6 +18,3 @@ RUN chmod u+x /docker-entrypoint /scripts/*
 
 ENTRYPOINT ["/docker-entrypoint"]
 CMD [ "/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf" ]
-
-# Healthcheck
-HEALTHCHECK --interval=1m --timeout=30s --start-period=10s CMD drill @127.0.0.1 -p 10001 example.com || exit 1
