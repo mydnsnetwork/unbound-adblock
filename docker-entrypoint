@@ -5,7 +5,7 @@ export UNBOUND_CONFIG_FILE=/etc/unbound/unbound.conf
 export UNBOUND_CONFIG_SAMPLE_FILE=/templates/unbound.sample.conf
 export UNBOUND_ANCHOR_FILE=/etc/unbound/keys/root.key
 export UNBOUND_ROOT_HINTS=/etc/unbound/root.hints
-export UNBOUND_BLOCKED_HOSTS_FILE=/etc/unbound/unbound.blocked.hosts
+export UNBOUND_BLOCKED_HOSTS_DIR=/etc/unbound/blocked
 export ICANN_BUNDLE_FILE=/etc/unbound/keys/icannbundle.pem
 
 printf "|---------------------------------------------------------------------------------------------\n";
@@ -41,7 +41,7 @@ chown -Rf unbound:unbound /etc/unbound /etc/unbound/keys
 chmod 644 /etc/unbound/*.conf
 
 # Update our blocked hosts
-/bin/bash /scripts/update_blocklists.sh no-reload
+/bin/bash /scripts/update_blocklists.sh ${UNBOUND_BLOCKED_HOSTS_DIR} no-reload
 
 printf "| ENTRYPOINT: \033[0;31mStarting supervisord (which starts and monitors cron and unbound) \033[0m\n"
 printf "|---------------------------------------------------------------------------------------------\n";
@@ -49,7 +49,7 @@ printf "|-----------------------------------------------------------------------
 # Lets create cron script for updating host daily
 CRON_FILE=/etc/periodic/daily/updatehosts
 printf "#!/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n" > ${CRON_FILE}
-printf ". /scripts/update_blocklists.sh\n" >> ${CRON_FILE}
+printf ". /scripts/update_blocklists.sh ${UNBOUND_BLOCKED_HOSTS_DIR}\n" >> ${CRON_FILE}
 chmod +x ${CRON_FILE}
 
 # And off we launch

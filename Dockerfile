@@ -6,8 +6,7 @@ RUN apk update \
 	supervisor \
 	unbound \
 	openssl \
-	&& rm -rf /etc/unbound/unbound.conf /etc/unbound/root.hints \
-	&& mkdir -p /etc/unbound/blocked
+	&& rm -rf /etc/unbound/unbound.conf /etc/unbound/root.hints
 
 COPY scripts/ /scripts
 COPY unbound.conf /etc/unbound/unbound.conf

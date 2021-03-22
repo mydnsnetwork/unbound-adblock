@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [[ "$1" == "" ]]; then
-  UNBOUND_BLOCKED_HOSTS_FILE=/etc/unbound/unbound.blocked.hosts
+  UNBOUND_BLOCKED_HOSTS_DIR=/etc/unbound/blocked
 else
-  UNBOUND_BLOCKED_HOSTS_FILE="$1"
+  UNBOUND_BLOCKED_HOSTS_DIR="$1"
 fi
 
 lists=(
@@ -21,6 +21,9 @@ domainLists=(
 )
 
 echo "| INFO: Starting blocklist update..."
+
+mkdir -p ${UNBOUND_BLOCKED_HOSTS_DIR}
+
 for value in "${domainLists[@]}"; do
   listName=$(echo "$value" | sed -E "s/(http:\/\/|https:\/\/)//g" | sed "s/\//-/g")
   data=$(curl -s "$value")
