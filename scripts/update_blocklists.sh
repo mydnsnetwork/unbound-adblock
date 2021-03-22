@@ -8,6 +8,7 @@ lists=(
   'https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt'
 )
 
+echo "| INFO: Starting blocklist update..."
 for value in "${lists[@]}"; do
   listName=$(echo "$value" | sed -E "s/(http:\/\/|https:\/\/)//g" | sed "s/\//-/g")
   data=$(curl -s "$value")
@@ -25,3 +26,5 @@ if [[ "${1}" != "no-reload" ]]; then
     checkErr $? "Unbound service restart failed!"
   fi
 fi
+
+echo "| INFO: Blocklist update completed successfully..."
