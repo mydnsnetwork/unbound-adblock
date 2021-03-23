@@ -8,6 +8,10 @@ fi
 
 lists=(
   'https://raw.githubusercontent.com/StevenBlack/hosts/master/data/StevenBlack/hosts'
+  'https://raw.githubusercontent.com/StevenBlack/hosts/master/data/URLHaus/hosts'
+  'https://raw.githubusercontent.com/FadeMind/hosts.extras/master/add.2o7Net/hosts'
+  'https://raw.githubusercontent.com/FadeMind/hosts.extras/master/add.Spam/hosts'
+  'https://raw.githubusercontent.com/FadeMind/hosts.extras/master/UncheckyAds/hosts'
   'https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt'
   'https://raw.githubusercontent.com/anudeepND/blacklist/master/adservers.txt'
   'https://raw.githubusercontent.com/AdAway/adaway.github.io/master/hosts.txt'
