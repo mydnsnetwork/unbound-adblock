@@ -1,12 +1,10 @@
 FROM alpine:latest
 
-RUN apk update \
-	&& apk --no-cache add \
+RUN apk add --update --no-cache \
 	bash \
 	supervisor \
 	unbound \
-	openssl \
-	&& rm -rf /etc/unbound/unbound.conf /etc/unbound/root.hints
+	openssl
 
 COPY scripts/ /scripts
 COPY unbound.conf /etc/unbound/unbound.conf
