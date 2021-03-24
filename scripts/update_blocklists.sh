@@ -34,13 +34,13 @@ i=0
 for value in "${domainLists[@]}"; do
   listName=$(echo "$value" | sed -E "s/(http:\/\/|https:\/\/)//g" | sed "s/\//-/g")
   data=$(curl -s "$value")
-  echo "${data}" | grep -Ei '^[^#]' | awk '{print "local-zone: \""$1"\" redirect\nlocal-data: \""$1" A 0.0.0.0\"\nlocal-data: \""$1" AAAA 0100::\""}' > "${UNBOUND_BLOCKED_HOSTS_DIR}/${i}"
+  echo "${data}" | grep -Ei '^[^#]' | awk '{print "local-zone: \""$1"\" always_null"}' > "${UNBOUND_BLOCKED_HOSTS_DIR}/${i}"
   ((i=i+1))
 done
 for value in "${lists[@]}"; do
   listName=$(echo "$value" | sed -E "s/(http:\/\/|https:\/\/)//g" | sed "s/\//-/g")
   data=$(curl -s "$value")
-  echo "${data}" | grep -Ei '^(0.0.0.0|127.0.0.1)' | awk '{print "local-zone: \""$2"\" redirect\nlocal-data: \""$2" A 0.0.0.0\"\nlocal-data: \""$2" AAAA 0100::\""}' > "${UNBOUND_BLOCKED_HOSTS_DIR}/${i}"
+  echo "${data}" | grep -Ei '^(0.0.0.0|127.0.0.1)' | awk '{print "local-zone: \""$2"\" always_null"}' > "${UNBOUND_BLOCKED_HOSTS_DIR}/${i}"
   ((i=i+1))
 done
 
